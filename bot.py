@@ -19,6 +19,7 @@ RANDOM_GIF = 'https://tenor.com/view/crying-sobbing-uncontrollably-sad-cry-gif-1
 data = {"guilds": []}
 song_queue = []
 tasker = None
+now_playing = ""
 
 # ENVIRONMENT VARIABLES---------------------------------------------------------
 load_dotenv()
@@ -79,12 +80,12 @@ async def on_ready():
 async def play(ctx, url: str, *args):
     global song_queue
     voice = discord.utils.get(bot.voice_clients, guild=ctx.guild)
-
+    print(url)
     if not validators.url(url):
         # url = ' '.join(args[0:])
         to_play = url + " " + ' '.join(args[0:])
         print(to_play)
-    url = to_play
+        url = to_play
     try:
         # If author is in vc join that channel, otherwise error
         if(voice == None):
@@ -99,10 +100,9 @@ async def play(ctx, url: str, *args):
         async with ctx.typing():
             # The bot's connection to a channel
             voice_client = ctx.message.guild.voice_client
-            '''
-            if not (voice_client.is_playing() and voice_client.is_paused()):
+            if not voice_client.is_playing() and not voice_client.is_paused():
                 song_queue.clear()
-            '''
+
             player = await YTDLSource.from_url(url, loop=bot.loop, stream=True)
             if len(song_queue) == 0:
                 await start_playing(ctx, player)
@@ -115,6 +115,7 @@ async def play(ctx, url: str, *args):
 
 async def start_playing(ctx, player):
     global song_queue
+    global now_playing
     song_queue.append(player)
     if (song_queue[0] == None):
         return
@@ -124,6 +125,7 @@ async def start_playing(ctx, player):
             # ctx.voice_client.play(song_queue[0], after=lambda e: print('Player error: %s' % e) if e else None)
             ctx.voice_client.play(song_queue[0], after=lambda e: print(
                 f'Player error: {e}') if e else None)
+            now_playing = song_queue[0].title
             await ctx.send(f"**Now playing:** {song_queue[0].title}")
         except Exception as e:
             await ctx.send(f"Something went wrong: {e}")
@@ -132,8 +134,10 @@ async def start_playing(ctx, player):
         tasker = asyncio.create_task(coro(ctx, song_queue[0].duration))
         try:
             await tasker
+            now_playing = ""
         except asyncio.CancelledError:
             print("Task cancelled")
+            now_playing = ""
         if(len(song_queue) > 0):
             song_queue.pop(0)
 
@@ -187,6 +191,12 @@ async def skip(ctx):
         await ctx.send("The bot is not playing anything at the moment.")
 
 
+@bot.command(name='nowplaying', aliases=['np', 'songs'], help='Displays currently playing song')
+async def queued(ctx):
+    global now_playing
+    await ctx.send(f'**CURRENTLY PLAYING:** {now_playing}')
+
+
 @bot.command()
 async def flynn(ctx):
     await ctx.send(cat_gif)
@@ -195,10 +205,13 @@ async def flynn(ctx):
 @bot.command()
 async def flip(ctx):
     outcome = randint(0, 100)
-    if outcome == 74:
+    if outcome in [74]:
         await ctx.send(RANDOM_GIF)
+    elif outcome in [69]:
+        await ctx.send(f"Head")
     else:
-        await ctx.send(f"Heads {str(outcome)}") if outcome % 2 == 1 else await ctx.send(f"Tails {str(outcome)}")
+        # await ctx.send(f"Heads {str(outcome)}") if outcome % 2 == 1 else await ctx.send(f"Tails {str(outcome)}")
+        await ctx.send(f"Heads") if outcome % 2 == 1 else await ctx.send(f"Tails")
 
 
 @bot.command()
@@ -211,6 +224,22 @@ async def meow(ctx):
     except:
         ctx.voice_client.play(discord.FFmpegPCMAudio(
             executable="E:/FFmpeg/bin/ffmpeg.exe", source="meow.mp3"))
+
+
+@bot.command()
+async def gay(ctx):
+    channel = ctx.author.voice.channel
+    try:
+        vc = await channel.connect()
+        vc.play(discord.FFmpegPCMAudio(
+            executable="E:/FFmpeg/bin/ffmpeg.exe", source="gay.mp3"))
+        filename = 'images/gay.png'
+        with open(filename, "rb") as fh:
+            to_send = discord.File(fh, filename=filename)
+            await ctx.send(file=to_send)
+    except:
+        ctx.voice_client.play(discord.FFmpegPCMAudio(
+            executable="E:/FFmpeg/bin/ffmpeg.exe", source="gay.mp3"))
 
 
 @bot.command()
@@ -234,6 +263,11 @@ async def bruh(ctx):
 
 
 @bot.command()
+async def monkey(ctx):
+    await ctx.send('https://tenor.com/view/happy-monkey-circle-happy-monkey-circle-happy-monkey-circle-meme-gif-19448999')
+
+
+@bot.command()
 async def disconnect(ctx):
     for vc in bot.voice_clients:
         if vc.guild == ctx.message.guild:
@@ -252,14 +286,15 @@ async def clear(ctx):
     song_queue = []
     return
 
-
+'''
 @bot.event
 async def timeout():
     print("Checking timeout")
     for vc in bot.voice_clients:
         if vc.channel.members < 1:
             return await vc.disconnect()
-    pass
+    
+'''
 
 
 bot.run(TOKEN)
