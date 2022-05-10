@@ -220,26 +220,28 @@ async def meow(ctx):
     try:
         vc = await channel.connect()
         vc.play(discord.FFmpegPCMAudio(
-            executable="E:/FFmpeg/bin/ffmpeg.exe", source="meow.mp3"))
+            executable="E:/FFmpeg/bin/ffmpeg.exe", source="audio/meow.mp3"))
     except:
         ctx.voice_client.play(discord.FFmpegPCMAudio(
-            executable="E:/FFmpeg/bin/ffmpeg.exe", source="meow.mp3"))
+            executable="E:/FFmpeg/bin/ffmpeg.exe", source="audio/meow.mp3"))
 
 
 @bot.command()
 async def gay(ctx):
     channel = ctx.author.voice.channel
+    filename = 'images/gay.png'
+    with open(filename, "rb") as fh:
+        to_send = discord.File(fh, filename=filename)
+        await ctx.send(file=to_send)
     try:
         vc = await channel.connect()
         vc.play(discord.FFmpegPCMAudio(
-            executable="E:/FFmpeg/bin/ffmpeg.exe", source="gay.mp3"))
+            executable="E:/FFmpeg/bin/ffmpeg.exe", source="audio/gay.mp3"))
         filename = 'images/gay.png'
-        with open(filename, "rb") as fh:
-            to_send = discord.File(fh, filename=filename)
-            await ctx.send(file=to_send)
     except:
         ctx.voice_client.play(discord.FFmpegPCMAudio(
-            executable="E:/FFmpeg/bin/ffmpeg.exe", source="gay.mp3"))
+            executable="E:/FFmpeg/bin/ffmpeg.exe", source="audio/gay.mp3"))
+        filename = 'images/gay.png'
 
 
 @bot.command()
@@ -248,10 +250,10 @@ async def boom(ctx):
     try:
         vc = await channel.connect()
         vc.play(discord.FFmpegPCMAudio(
-            executable="E:/FFmpeg/bin/ffmpeg.exe", source="boom.mp3"))
+            executable="E:/FFmpeg/bin/ffmpeg.exe", source="audio/boom.mp3"))
     except:
         ctx.voice_client.play(discord.FFmpegPCMAudio(
-            executable="E:/FFmpeg/bin/ffmpeg.exe", source="boom.mp3"))
+            executable="E:/FFmpeg/bin/ffmpeg.exe", source="audio/boom.mp3"))
 
 
 @bot.command()
@@ -268,6 +270,11 @@ async def monkey(ctx):
 
 
 @bot.command()
+async def cum(ctx):
+    await ctx.send('https://tenor.com/view/funny-ice-cream-desserts-one-spoon-spoon-gif-14851936')
+
+
+@bot.command()
 async def disconnect(ctx):
     for vc in bot.voice_clients:
         if vc.guild == ctx.message.guild:
@@ -281,11 +288,15 @@ async def clear(ctx):
     global data
     global tasker
     global song_queue
+    global now_playing
     data = {"guilds": []}
     tasker = None
     song_queue = []
+    now_playing = ""
     return
 
+
+bot.run(TOKEN)
 '''
 @bot.event
 async def timeout():
@@ -295,9 +306,6 @@ async def timeout():
             return await vc.disconnect()
     
 '''
-
-
-bot.run(TOKEN)
 
 '''
 @client.event
