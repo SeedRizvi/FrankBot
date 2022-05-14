@@ -4,6 +4,8 @@ import asyncio
 import discord
 import youtube_dl
 import validators
+import json
+import socket
 from discord import FFmpegPCMAudio
 from discord.ext import commands
 from discord.voice_client import VoiceClient
@@ -20,14 +22,17 @@ data = {"guilds": []}
 song_queue = []
 tasker = None
 now_playing = ""
-
+data_file = "data.txt"
+# dig_data = []
+confirm = 0
 # ENVIRONMENT VARIABLES---------------------------------------------------------
 load_dotenv()
 TOKEN = os.getenv('DISCORDTOKEN')
 GUILD = os.getenv('DISCORDSERVER')
 
-# client = discord.Client()
 
+hostname = socket.gethostname()
+ip_address = socket.gethostbyname(hostname)
 ytdl_options = {
     'format': 'bestaudio/best',
     'restrictfilenames': True,
@@ -38,7 +43,7 @@ ytdl_options = {
     'quiet': True,
     'no_warnings': True,
     'default_search': 'auto',
-    'source_address': '192.168.0.5'
+    'source_address': ip_address  # Change if IPv4 changes
 }
 
 ytdl = youtube_dl.YoutubeDL(ytdl_options)
@@ -102,15 +107,16 @@ async def play(ctx, url: str, *args):
             voice_client = ctx.message.guild.voice_client
             if not voice_client.is_playing() and not voice_client.is_paused():
                 song_queue.clear()
-
             player = await YTDLSource.from_url(url, loop=bot.loop, stream=True)
             if len(song_queue) == 0:
                 await start_playing(ctx, player)
+
             else:
                 song_queue.append(player)
                 await ctx.send(f"**Queued at position {len(song_queue)-1}:** {player.title}")
     except Exception as error:
         print(f'An error has occured: {error}')
+        # print("meow")
 
 
 async def start_playing(ctx, player):
@@ -122,7 +128,8 @@ async def start_playing(ctx, player):
     i = 0
     while i < len(song_queue):
         try:
-            # ctx.voice_client.play(song_queue[0], after=lambda e: print('Player error: %s' % e) if e else None)
+            # ctx.voice_client.play(song_queue[0], after=lambda e: print(
+            #     'Player error: %s' % e) if e else None)
             ctx.voice_client.play(song_queue[0], after=lambda e: print(
                 f'Player error: {e}') if e else None)
             now_playing = song_queue[0].title
@@ -228,20 +235,21 @@ async def meow(ctx):
 
 @bot.command()
 async def gay(ctx):
-    channel = ctx.author.voice.channel
     filename = 'images/gay.png'
     with open(filename, "rb") as fh:
         to_send = discord.File(fh, filename=filename)
         await ctx.send(file=to_send)
-    try:
-        vc = await channel.connect()
-        vc.play(discord.FFmpegPCMAudio(
-            executable="E:/FFmpeg/bin/ffmpeg.exe", source="audio/gay.mp3"))
-        filename = 'images/gay.png'
-    except:
-        ctx.voice_client.play(discord.FFmpegPCMAudio(
-            executable="E:/FFmpeg/bin/ffmpeg.exe", source="audio/gay.mp3"))
-        filename = 'images/gay.png'
+    if ctx.author.voice != None:
+        channel = ctx.author.voice.channel
+        try:
+            vc = await channel.connect()
+            vc.play(discord.FFmpegPCMAudio(
+                executable="E:/FFmpeg/bin/ffmpeg.exe", source="audio/gay.mp3"))
+            filename = 'images/gay.png'
+        except:
+            ctx.voice_client.play(discord.FFmpegPCMAudio(
+                executable="E:/FFmpeg/bin/ffmpeg.exe", source="audio/gay.mp3"))
+            filename = 'images/gay.png'
 
 
 @bot.command()
@@ -275,6 +283,33 @@ async def cum(ctx):
 
 
 @bot.command()
+async def register(ctx):
+    name = ctx.message.author
+    with open('data.json', 'r') as fp:
+        try:
+            data = json.load(fp)
+            for dic in data:
+                if dic['name'] == str(name):
+                    await ctx.send('This user is already registered.')
+                    return
+            dig_data = {'name': str(name), 'items': []}
+            data.append(dig_data)
+            fp.close()
+            decider = 0
+        except:
+            dig_data = [{'name': str(name), 'items': []}]
+            fp.close()
+            decider = 1
+    with open('data.json', 'w') as fp:
+        if decider == 1:
+            json.dump(dig_data, fp)
+        else:
+            json.dump(data, fp)
+        fp.close()
+    await ctx.send('This user has been registered.')
+
+
+@bot.command()
 async def disconnect(ctx):
     for vc in bot.voice_clients:
         if vc.guild == ctx.message.guild:
@@ -296,7 +331,31 @@ async def clear(ctx):
     return
 
 
+@bot.command()
+async def clear_all(ctx):
+    if str(ctx.message.author) != 'Daruni#8443':
+        await ctx.send('Only the server owner can clear all data.')
+        return
+
+    global confirm
+    confirm += 1
+    if confirm == 1:
+        await ctx.send("Are you sure you want to delete all data? Run command again if so.")
+    elif confirm == 2:
+        os.remove('data.json')
+        if not os.path.exists('data.json'):
+            with open('data.json', 'w') as fp:
+                fp.close()
+            await ctx.send("Data has been deleted.")
+        confirm = 0
+
+
 bot.run(TOKEN)
+
+# dig_data = [
+#     {name: 'name', items: []}
+# ]
+# dig_data = [{name: 'name', items: []}]
 '''
 @bot.event
 async def timeout():
@@ -306,7 +365,6 @@ async def timeout():
             return await vc.disconnect()
     
 '''
-
 '''
 @client.event
 async def on_ready():
