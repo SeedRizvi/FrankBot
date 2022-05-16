@@ -81,7 +81,7 @@ async def on_ready():
     print("Launching Bot")
 
 
-@bot.command(name='play', aliases=['p', 'play_song'], help='Play or add song to queue')
+@bot.command(name='play', aliases=['p', 'play_song'])
 async def play(ctx, url: str, *args):
     global song_queue
     voice = discord.utils.get(bot.voice_clients, guild=ctx.guild)
@@ -154,7 +154,7 @@ async def coro(ctx, duration):
     await asyncio.sleep(duration)
 
 
-@bot.command(name='queue', aliases=['q', 'list'], help='This command displays the queue')
+@bot.command(name='queue', aliases=['q', 'list'])
 async def queued(ctx):
     global song_queue
     a = ""
@@ -166,7 +166,7 @@ async def queued(ctx):
     await ctx.send("Queued songs: \n " + a)
 
 
-@bot.command(name='pause', help='This command pauses the song')
+@bot.command(name='pause')
 async def pause(ctx):
     voice_client = ctx.message.guild.voice_client
     if voice_client.is_playing():
@@ -176,7 +176,7 @@ async def pause(ctx):
         await ctx.send("The bot is not playing anything at the moment.")
 
 
-@bot.command(name='resume', help='Resumes the song')
+@bot.command(name='resume')
 async def resume(ctx):
     voice_client = ctx.message.guild.voice_client
     if voice_client.is_paused():
@@ -186,7 +186,7 @@ async def resume(ctx):
         await ctx.send("The bot was not playing anything before this. Use play_song command")
 
 
-@bot.command(name='skip', help='Skip the song')
+@bot.command(name='skip')
 async def skip(ctx):
     global tasker
     voice_client = ctx.message.guild.voice_client
@@ -198,7 +198,7 @@ async def skip(ctx):
         await ctx.send("The bot is not playing anything at the moment.")
 
 
-@bot.command(name='nowplaying', aliases=['np', 'songs'], help='Displays currently playing song')
+@bot.command(name='nowplaying', aliases=['np', 'songs'])
 async def queued(ctx):
     global now_playing
     await ctx.send(f'**CURRENTLY PLAYING:** {now_playing}')
@@ -310,6 +310,59 @@ async def register(ctx):
 
 
 @bot.command()
+async def dig(ctx):
+    name = ctx.message.author
+    with open('data.json', 'r') as fp:
+        try:
+            pass
+        except:
+            pass
+    with open('data.json', 'w') as fp:
+        pass
+    await ctx.send('This user has been registered.')
+
+
+@bot.command(name='commands', aliases=['c'])
+async def commands(ctx, *args):
+    if len(args) > 0:
+        if args[0] in ['general', 'gen', 'g']:
+            commands = ['!monkey', '!bruh', '!gay',
+                        '!meow', '!boom', '!cum', '!flip', '!flynn']
+            to_send = '**List of Commands**:'
+            num = 0
+            for c in commands:
+                to_send += '\n'
+                num += 1
+                to_send += f'{num}. {c}'
+            await ctx.send(to_send)
+
+        elif args[0] in ['bot', 'b']:
+            commands = ['!play / !p', '!skip / !s',
+                        '!nowplaying / !np', '!pause', '!resume']
+
+            to_send = '**List of Commands**:'
+            num = 0
+            for c in commands:
+                to_send += '\n'
+                num += 1
+                to_send += f'{num}. {c}'
+            await ctx.send(to_send)
+
+        elif args[0] in ['admin', 'ad']:
+            commands = ['!clear', '!clear_all', '!register']
+            to_send = '**List of Commands**:'
+            num = 0
+            for c in commands:
+                to_send += '\n'
+                num += 1
+                to_send += f'{num}. {c}'
+            await ctx.send(to_send)
+    else:
+        await ctx.send(f'Proper use is *!commands [topic]*')
+        await ctx.send(f'Topics include: general, bot, admin')
+
+
+@bot.command()
 async def disconnect(ctx):
     for vc in bot.voice_clients:
         if vc.guild == ctx.message.guild:
@@ -351,6 +404,17 @@ async def clear_all(ctx):
 
 
 bot.run(TOKEN)
+
+
+async def command_print(ctx, commands):
+    to_send = '**List of Commands**:'
+    num = 0
+    for c in commands:
+        to_send += '\n'
+        num += 1
+        to_send += f'{num}. {c}'
+    return to_send
+
 
 # dig_data = [
 #     {name: 'name', items: []}
