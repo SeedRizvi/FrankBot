@@ -23,7 +23,6 @@ song_queue = []
 tasker = None
 now_playing = ""
 data_file = "data.txt"
-# dig_data = []
 confirm = 0
 # ENVIRONMENT VARIABLES---------------------------------------------------------
 load_dotenv()
@@ -239,17 +238,19 @@ async def gay(ctx):
     with open(filename, "rb") as fh:
         to_send = discord.File(fh, filename=filename)
         await ctx.send(file=to_send)
+
+
+@bot.command()
+async def gay_tiktok(ctx):
     if ctx.author.voice != None:
         channel = ctx.author.voice.channel
         try:
             vc = await channel.connect()
             vc.play(discord.FFmpegPCMAudio(
                 executable="E:/FFmpeg/bin/ffmpeg.exe", source="audio/gay.mp3"))
-            filename = 'images/gay.png'
         except:
             ctx.voice_client.play(discord.FFmpegPCMAudio(
                 executable="E:/FFmpeg/bin/ffmpeg.exe", source="audio/gay.mp3"))
-            filename = 'images/gay.png'
 
 
 @bot.command()
@@ -284,20 +285,20 @@ async def cum(ctx):
 
 @bot.command()
 async def register(ctx):
-    name = ctx.message.author
+    user_id = ctx.message.author.id
     with open('data.json', 'r') as fp:
         try:
             data = json.load(fp)
             for dic in data:
-                if dic['name'] == str(name):
+                if dic['id'] == str(user_id):
                     await ctx.send('This user is already registered.')
                     return
-            dig_data = {'name': str(name), 'items': []}
+            dig_data = {'id': str(user_id), 'items': []}
             data.append(dig_data)
             fp.close()
             decider = 0
         except:
-            dig_data = [{'name': str(name), 'items': []}]
+            dig_data = [{'id': str(user_id), 'items': []}]
             fp.close()
             decider = 1
     with open('data.json', 'w') as fp:
@@ -311,12 +312,12 @@ async def register(ctx):
 
 @bot.command()
 async def dig(ctx):
-    name = ctx.message.author
+    name = str(ctx.message.author)
     with open('data.json', 'r') as fp:
         try:
             pass
-        except:
-            pass
+        except Exception as error:
+            print(f'Error Occured: {error}')
     with open('data.json', 'w') as fp:
         pass
     await ctx.send('This user has been registered.')
@@ -326,7 +327,7 @@ async def dig(ctx):
 async def commands(ctx, *args):
     if len(args) > 0:
         if args[0] in ['general', 'gen', 'g']:
-            commands = ['!monkey', '!bruh', '!gay',
+            commands = ['!monkey', '!bruh', '!gay', '!gay_tiktok',
                         '!meow', '!boom', '!cum', '!flip', '!flynn']
             to_send = '**List of Commands**:'
             num = 0
@@ -416,10 +417,27 @@ async def command_print(ctx, commands):
     return to_send
 
 
+async def dig_logic():
+    roll = randint(1, 1000)
+    pass
+
 # dig_data = [
 #     {name: 'name', items: []}
 # ]
-# dig_data = [{name: 'name', items: []}]
+'''
+Legendary Item:
+- SOMETHING (1/1000) 
+Ultra Rare Items: 
+- Reuben's Plushie (1/100) Value: 100,000
+- Flynn's Grinder (1/100) Value: 100,000
+- Shower Cereal (1/100) Value: 100,000
+- Fresh Microphone (1/100) Value: 100,000
+- Asad's Groutfit (1/100) Value: 100,000
+Rare Items:
+- Frank's Webcam (5/100) Value: 20,000
+- 10 in One (5/100) Value: 20,000 Does 10 rolls for the cost of one.
+'''
+# Helper Functions--------------------------------------------------------------
 '''
 @bot.event
 async def timeout():
