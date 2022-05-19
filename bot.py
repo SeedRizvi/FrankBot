@@ -11,6 +11,7 @@ from discord.ext import commands
 from discord.voice_client import VoiceClient
 from dotenv import load_dotenv
 from random import randint
+from items import get_items
 
 # GLOBAL VARIABLES--------------------------------------------------------------
 VOICE_CHANNEL = 'ball-channel'
@@ -21,6 +22,7 @@ RANDOM_GIF = 'https://tenor.com/view/crying-sobbing-uncontrollably-sad-cry-gif-1
 data = {"guilds": []}
 song_queue = []
 tasker = None
+tasker_dig = None
 now_playing = ""
 data_file = "data.txt"
 confirm = 0
@@ -115,7 +117,6 @@ async def play(ctx, url: str, *args):
                 await ctx.send(f"**Queued at position {len(song_queue)-1}:** {player.title}")
     except Exception as error:
         print(f'An error has occured: {error}')
-        # print("meow")
 
 
 async def start_playing(ctx, player):
@@ -283,46 +284,6 @@ async def cum(ctx):
     await ctx.send('https://tenor.com/view/funny-ice-cream-desserts-one-spoon-spoon-gif-14851936')
 
 
-@bot.command()
-async def register(ctx):
-    user_id = ctx.message.author.id
-    with open('data.json', 'r') as fp:
-        try:
-            data = json.load(fp)
-            for dic in data:
-                if dic['id'] == str(user_id):
-                    await ctx.send('This user is already registered.')
-                    return
-            dig_data = {'id': str(user_id), 'items': []}
-            data.append(dig_data)
-            fp.close()
-            decider = 0
-        except:
-            dig_data = [{'id': str(user_id), 'items': []}]
-            fp.close()
-            decider = 1
-    with open('data.json', 'w') as fp:
-        if decider == 1:
-            json.dump(dig_data, fp)
-        else:
-            json.dump(data, fp)
-        fp.close()
-    await ctx.send('This user has been registered.')
-
-
-@bot.command()
-async def dig(ctx):
-    name = str(ctx.message.author)
-    with open('data.json', 'r') as fp:
-        try:
-            pass
-        except Exception as error:
-            print(f'Error Occured: {error}')
-    with open('data.json', 'w') as fp:
-        pass
-    await ctx.send('This user has been registered.')
-
-
 @bot.command(name='commands', aliases=['c'])
 async def commands(ctx, *args):
     if len(args) > 0:
@@ -361,6 +322,72 @@ async def commands(ctx, *args):
     else:
         await ctx.send(f'Proper use is *!commands [topic]*')
         await ctx.send(f'Topics include: general, bot, admin')
+
+
+@bot.command()
+async def register(ctx):
+    user_id = ctx.message.author.id
+    with open('data.json', 'r') as fp:
+        try:
+            data = json.load(fp)
+            for dic in data:
+                if dic['id'] == str(user_id):
+                    await ctx.send('This user is already registered.')
+                    return
+            dig_data = {'id': str(user_id), 'items': []}
+            data.append(dig_data)
+            fp.close()
+            decider = 0
+        except:
+            dig_data = [{'id': str(user_id), 'items': []}]
+            fp.close()
+            decider = 1
+    with open('data.json', 'w') as fp:
+        if decider == 1:
+            json.dump(dig_data, fp)
+        else:
+            json.dump(data, fp)
+        fp.close()
+    await ctx.send('This user has been registered.')
+
+
+@bot.command()
+async def dig(ctx):
+    user = str(ctx.message.author.id)
+    with open('data.json', 'r') as fp:
+        # Verifying user is registered
+        try:
+            data = json.load(fp)
+            print(data)
+            pos = -1
+            for dic in data:
+                decider = 1 if dic['id'] == user else 0
+                pos += 1
+            fp.close()
+            if decider == 1:
+                print('Registered.')
+            else:
+                await ctx.send(f'{ctx.message.author} is not currently registered.')
+                return
+        except Exception as error:
+            print(f'Error Occured: {error}')
+
+    with open('data.json', 'w') as fp:
+        # TODO: Run logic to find dug item
+
+        item = dig_logic()
+        try:
+            await item
+            data[pos]['items'].append(item)
+            pass
+
+        except Exception as error:
+            print(f'Error Occured: {error}')
+        json.dump(data, fp)
+        fp.close()
+
+
+# ESSENTIALS -------------------------------------------------------------------
 
 
 @bot.command()
@@ -403,8 +430,19 @@ async def clear_all(ctx):
             await ctx.send("Data has been deleted.")
         confirm = 0
 
+'''
+@bot.event()
+async def timeout(ctx):
+    voice = ctx.message.guild.voice_client
+    if voice != None:
+        for vc in bot.voice_clients:
+            if vc.guild == ctx.message.guild:
+                if vc.channel.members < 1:
+                    return await vc.disconnect()
 
-bot.run(TOKEN)
+    return
+'''
+# Helper Functions--------------------------------------------------------------
 
 
 async def command_print(ctx, commands):
@@ -419,14 +457,25 @@ async def command_print(ctx, commands):
 
 async def dig_logic():
     roll = randint(1, 1000)
-    pass
+    async with get_items() as all_items:
+        print(all_items)
+        return all_items
+    # return asyncio.as_completed(get_items())
+    # all_items = get_items()
+    # await all_items
+    # print(all_items)
+    # return "Reuben's Plushie"
+
+if __name__ == '__main__':
+    bot.run(TOKEN)
+
 
 # dig_data = [
 #     {name: 'name', items: []}
 # ]
 '''
 Legendary Item:
-- SOMETHING (1/1000) 
+- SOMETHING (1/1000) Blade of the Ruined King
 Ultra Rare Items: 
 - Reuben's Plushie (1/100) Value: 100,000
 - Flynn's Grinder (1/100) Value: 100,000
@@ -434,10 +483,12 @@ Ultra Rare Items:
 - Fresh Microphone (1/100) Value: 100,000
 - Asad's Groutfit (1/100) Value: 100,000
 Rare Items:
+- Zinger
+- Extra Crispy
 - Frank's Webcam (5/100) Value: 20,000
-- 10 in One (5/100) Value: 20,000 Does 10 rolls for the cost of one.
+- 10x (5/100) Value: 20,000 Rolls 10 times and chooses best outcome.
 '''
-# Helper Functions--------------------------------------------------------------
+
 '''
 @bot.event
 async def timeout():
