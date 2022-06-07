@@ -275,6 +275,36 @@ async def bruh(ctx):
 
 
 @bot.command()
+async def penis(ctx):
+    filename = 'images/thoughts.png'
+    with open(filename, "rb") as fh:
+        to_send = discord.File(fh, filename=filename)
+        await ctx.send(file=to_send)
+
+
+@bot.command()
+async def honest(ctx):
+    filename = 'images/honest.png'
+    with open(filename, "rb") as fh:
+        to_send = discord.File(fh, filename=filename)
+        await ctx.send(file=to_send)
+
+
+@bot.command()
+async def beatbox(ctx):
+    filename = 'images/beatbox.jpg'
+    with open(filename, "rb") as fh:
+        to_send = discord.File(fh, filename=filename)
+        await ctx.send(file=to_send)
+
+
+@bot.command()
+async def crump(ctx):
+    filename = 'https://tenor.com/view/marge-simpson-dancing-homer-simpson-gif-12235449'
+    await ctx.send(f'{filename}')
+
+
+@bot.command()
 async def monkey(ctx):
     await ctx.send('https://tenor.com/view/happy-monkey-circle-happy-monkey-circle-happy-monkey-circle-meme-gif-19448999')
 
@@ -289,7 +319,8 @@ async def commands(ctx, *args):
     if len(args) > 0:
         if args[0] in ['general', 'gen', 'g']:
             commands = ['!monkey', '!bruh', '!gay', '!gay_tiktok',
-                        '!meow', '!boom', '!cum', '!flip', '!flynn']
+                        '!meow', '!boom', '!cum', '!flip', '!flynn', '!beatbox',
+                        '!honest', '!penis', '!crump']
             to_send = '**List of Commands**:'
             num = 0
             for c in commands:
