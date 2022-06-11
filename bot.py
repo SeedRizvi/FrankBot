@@ -6,6 +6,8 @@ import youtube_dl
 import validators
 import json
 import socket
+import datetime
+# import pycord
 from discord import FFmpegPCMAudio
 from discord.ext import commands
 from discord.voice_client import VoiceClient
@@ -26,6 +28,7 @@ tasker_dig = None
 now_playing = ""
 data_file = "data.txt"
 confirm = 0
+confirm2 = 0
 # ENVIRONMENT VARIABLES---------------------------------------------------------
 load_dotenv()
 TOKEN = os.getenv('DISCORDTOKEN')
@@ -299,6 +302,11 @@ async def beatbox(ctx):
 
 
 @bot.command()
+async def cheeseburger(ctx):
+    await ctx.send(f"19 DOLLAR CHEESBURGER? AND THEN WHAT?? THEN WHAT? I GET NO FRIES LIKE SOME HUNGRY...R- COMPLETE IDIOT? HEY GUYS THANK- HEY GUYS THANKS FOR THE CHEESBURGER MAN, O-o-Y-O-OH WAIT ARE YOU - YOU'RE CHARGING 7 DOLLARS FOR FRIES? OH O YOU HAVE A 16 DOLLAR MILKSHAKE NOW? THAT'S FANTASTIC DODE-DODE, TH-THE PRICES WILL GO UP, ILL BE POOR, LOSE MY JOB, GRADUATE, GET ANOTHER JOB, GET GER RICH AGAIN, BUY ANOTHER 19 DOLLAR CHEESBURGER, GO BACK TO BEING POOR , THEN GET ANOTHER JOB, THEN I'LL STILL FU- SHAAA-D-DUDE THIS RESTERAUNT IS SO Fukin- retarded dude i can't fucking eat from them anymore dude, 16 DOLLAR CHEESBURGER? PLEASE DOODE STOP SMOKING CUHRACK. 19 DOLLARS?? ")
+
+
+@bot.command()
 async def crump(ctx):
     filename = 'https://tenor.com/view/marge-simpson-dancing-homer-simpson-gif-12235449'
     await ctx.send(f'{filename}')
@@ -314,13 +322,18 @@ async def cum(ctx):
     await ctx.send('https://tenor.com/view/funny-ice-cream-desserts-one-spoon-spoon-gif-14851936')
 
 
+@bot.command()
+async def saul(ctx):
+    await ctx.send('https://tenor.com/view/3d-saul-saul-goodman-adamghik-gif-23876766')
+
+
 @bot.command(name='commands', aliases=['c'])
 async def commands(ctx, *args):
     if len(args) > 0:
         if args[0] in ['general', 'gen', 'g']:
             commands = ['!monkey', '!bruh', '!gay', '!gay_tiktok',
                         '!meow', '!boom', '!cum', '!flip', '!flynn', '!beatbox',
-                        '!honest', '!penis', '!crump']
+                        '!honest', '!penis', '!crump', '!saul']
             to_send = '**List of Commands**:'
             num = 0
             for c in commands:
@@ -380,6 +393,27 @@ async def register(ctx):
             json.dump(data, fp)
         fp.close()
     await ctx.send('This user has been registered.')
+
+
+@bot.command()
+async def ninja(ctx):
+    global confirm2
+    print(ctx.message.author.id)
+    if str(ctx.message.author.id) != '288461670479822849':
+        confirm2 += 1
+        user = ctx.author
+        print(user)
+        if confirm2 == 1:
+            await ctx.send("Are you sure you want to say ninja?")
+        elif confirm2 == 2:
+            await ctx.send(f"You're not allowed to say that!! {str(user)}")
+            await user.send('meow')
+            await user.kick(reason='lol')
+            confirm2 = 0
+        # await user.timeout(until=discord.utils.utcnow() + datetime.timedelta(seconds=5), reason='L')
+        # await ctx.message.author.disconnect()
+    else:
+        await ctx.send(f"Get another user to type !ninja to gain 'Founder' Role.")
 
 
 @bot.command()
