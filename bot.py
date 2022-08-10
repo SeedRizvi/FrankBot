@@ -236,26 +236,6 @@ async def meow(ctx):
             executable="E:/FFmpeg/bin/ffmpeg.exe", source="audio/meow.mp3"))
 
 
-@bot.command()
-async def gay(ctx):
-    filename = 'images/gay.png'
-    with open(filename, "rb") as fh:
-        to_send = discord.File(fh, filename=filename)
-        await ctx.send(file=to_send)
-
-
-@bot.command()
-async def gay_tiktok(ctx):
-    if ctx.author.voice != None:
-        channel = ctx.author.voice.channel
-        try:
-            vc = await channel.connect()
-            vc.play(discord.FFmpegPCMAudio(
-                executable="E:/FFmpeg/bin/ffmpeg.exe", source="audio/gay.mp3"))
-        except:
-            ctx.voice_client.play(discord.FFmpegPCMAudio(
-                executable="E:/FFmpeg/bin/ffmpeg.exe", source="audio/gay.mp3"))
-
 
 @bot.command()
 async def boom(ctx):
@@ -277,13 +257,6 @@ async def bruh(ctx):
         await ctx.send(file=to_send)
 
 
-@bot.command()
-async def penis(ctx):
-    filename = 'images/thoughts.png'
-    with open(filename, "rb") as fh:
-        to_send = discord.File(fh, filename=filename)
-        await ctx.send(file=to_send)
-
 
 @bot.command()
 async def honest(ctx):
@@ -301,10 +274,6 @@ async def beatbox(ctx):
         await ctx.send(file=to_send)
 
 
-@bot.command()
-async def cheeseburger(ctx):
-    await ctx.send(f"19 DOLLAR CHEESBURGER? AND THEN WHAT?? THEN WHAT? I GET NO FRIES LIKE SOME HUNGRY...R- COMPLETE IDIOT? HEY GUYS THANK- HEY GUYS THANKS FOR THE CHEESBURGER MAN, O-o-Y-O-OH WAIT ARE YOU - YOU'RE CHARGING 7 DOLLARS FOR FRIES? OH O YOU HAVE A 16 DOLLAR MILKSHAKE NOW? THAT'S FANTASTIC DODE-DODE, TH-THE PRICES WILL GO UP, ILL BE POOR, LOSE MY JOB, GRADUATE, GET ANOTHER JOB, GET GER RICH AGAIN, BUY ANOTHER 19 DOLLAR CHEESBURGER, GO BACK TO BEING POOR , THEN GET ANOTHER JOB, THEN I'LL STILL FU- SHAAA-D-DUDE THIS RESTERAUNT IS SO Fukin- retarded dude i can't fucking eat from them anymore dude, 16 DOLLAR CHEESBURGER? PLEASE DOODE STOP SMOKING CUHRACK. 19 DOLLARS?? ")
-
 
 @bot.command()
 async def crump(ctx):
@@ -317,23 +286,14 @@ async def monkey(ctx):
     await ctx.send('https://tenor.com/view/happy-monkey-circle-happy-monkey-circle-happy-monkey-circle-meme-gif-19448999')
 
 
-@bot.command()
-async def cum(ctx):
-    await ctx.send('https://tenor.com/view/funny-ice-cream-desserts-one-spoon-spoon-gif-14851936')
-
-
-@bot.command()
-async def saul(ctx):
-    await ctx.send('https://tenor.com/view/3d-saul-saul-goodman-adamghik-gif-23876766')
-
 
 @bot.command(name='commands', aliases=['c'])
 async def commands(ctx, *args):
     if len(args) > 0:
         if args[0] in ['general', 'gen', 'g']:
-            commands = ['!monkey', '!bruh', '!gay', '!gay_tiktok',
-                        '!meow', '!boom', '!cum', '!flip', '!flynn', '!beatbox',
-                        '!honest', '!penis', '!crump', '!saul']
+            commands = ['!monkey', '!bruh', 
+                         '!boom',  '!flip', '!flynn', '!beatbox',
+                        '!honest', '!crump']
             to_send = '**List of Commands**:'
             num = 0
             for c in commands:
@@ -397,6 +357,7 @@ async def register(ctx):
 
 @bot.command()
 async def ninja(ctx):
+    # Dummy command to remove user from server.
     global confirm2
     print(ctx.message.author.id)
     if str(ctx.message.author.id) != '288461670479822849':
@@ -410,8 +371,7 @@ async def ninja(ctx):
             await user.send('meow')
             await user.kick(reason='lol')
             confirm2 = 0
-        # await user.timeout(until=discord.utils.utcnow() + datetime.timedelta(seconds=5), reason='L')
-        # await ctx.message.author.disconnect()
+        
     else:
         await ctx.send(f"Get another user to type !ninja to gain 'Founder' Role.")
 
@@ -453,7 +413,6 @@ async def dig(ctx):
 
 
 # ESSENTIALS -------------------------------------------------------------------
-
 
 @bot.command()
 async def disconnect(ctx):
@@ -538,21 +497,7 @@ if __name__ == '__main__':
 # dig_data = [
 #     {name: 'name', items: []}
 # ]
-'''
-Legendary Item:
-- SOMETHING (1/1000) Blade of the Ruined King
-Ultra Rare Items: 
-- Reuben's Plushie (1/100) Value: 100,000
-- Flynn's Grinder (1/100) Value: 100,000
-- Shower Cereal (1/100) Value: 100,000
-- Fresh Microphone (1/100) Value: 100,000
-- Asad's Groutfit (1/100) Value: 100,000
-Rare Items:
-- Zinger
-- Extra Crispy
-- Frank's Webcam (5/100) Value: 20,000
-- 10x (5/100) Value: 20,000 Rolls 10 times and chooses best outcome.
-'''
+
 
 '''
 @bot.event
@@ -574,38 +519,6 @@ async def on_ready():
     global data
     data['guilds'].append(dict(g_name=guild.name, channel=channel.name))
 '''
-'''
-@client.event
-async def on_message(message):
-    if message.author == bot.user:
-        return
-    
-    print(f'{message.author} posted in {message.channel}')
-    if str(message.author) != ASAD:
-        print("not asad")
-        return
-    
-    if str(message.channel) != WORK_CHANNEL:
-        print("not in tests, ignoring")
-        return
 
-    print(f"New message from: {message.author}")
-    # If the message was posted in the bot-tests channel
-    if str(message.channel) == WORK_CHANNEL:
-        await message.channel.send(message.content)
-    if 'flynn' in str(message.content).lower():
-        await message.channel.send(cat_gif)
-'''
-'''
-data = {
-    "guilds": [{"g_name": f, "channel": channel}]
-}
-'''
-'''
-@bot.command()
-async def typing(ctx, help='type for 10 seconds'):
-    channel = ctx.channel
-    async with channel.typing():
-        await asyncio.sleep(10)  # Wait 10 seconds with typing status
-    await channel.send(f'I just {help}')
-'''
+
+
