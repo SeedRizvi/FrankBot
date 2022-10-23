@@ -5,5 +5,4 @@ if a user is connected to a channel. Also, being able to play videos from YouTub
 searching or using a provided URL and control subsequent videos by pausing, resuming, 
 skipping etc.  
 
-edit: Due to discord api changes and the introduction of /commands, this bot no longer works
-as of 23/10/22
+23/10/22: Due to discord api changes and the introduction of /commands, this bot no longer works.
